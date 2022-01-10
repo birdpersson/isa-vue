@@ -283,7 +283,14 @@ export default {
     },
     signupSuccessful: function (response) {
       if (response.status === 201) {
-        this.login(response.data);
+        console.log(response.data);
+        axios
+          .post("http://localhost:8080/auth/login", {
+            username: this.user.username,
+            password: this.user.password,
+          })
+          .then((Response) => this.loginSuccessful(Response.data))
+          .catch(() => this.loginFailed());
       }
       this.signupFailed();
     },
@@ -292,15 +299,6 @@ export default {
       setTimeout(() => (this.error = false), 5000);
       this.messages.errorResponse = `<h4>Username already exists!</h4>`;
       // setTimeout(() => this.messages.errorResponse='', 5000);
-    },
-    login: function (user) {
-      axios
-        .post("http://localhost:8080/auth/login", {
-          username: user.username,
-          password: user.password,
-        })
-        .then((Response) => this.loginSuccessful(Response.data))
-        .catch(() => this.loginFailed());
     },
     loginSuccessful: function (data) {
       console.log(data);
