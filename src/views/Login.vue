@@ -79,15 +79,13 @@ export default {
         .catch(() => this.loginFailed());
     },
     loginSuccessful: function (data) {
-      console.log(data);
       if (!data.accessToken) {
         this.loginFailed();
         return;
       }
-      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+      localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.role);
-      axios.defaults.headers.common["Authorization"] =
-        "Bearer " + localStorage.getItem("accessToken");
+      window.location.reload();
       this.error = false;
       this.$router.push("/");
     },
