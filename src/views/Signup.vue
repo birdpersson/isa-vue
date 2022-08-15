@@ -306,7 +306,7 @@ export default {
         this.loginFailed();
         return;
       }
-      localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+      localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.role);
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + localStorage.getItem("accessToken");

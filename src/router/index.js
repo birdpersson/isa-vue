@@ -3,6 +3,9 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
+import Cabins from "../views/Cabins.vue";
+import CabinView from "../views/Cabin.vue";
+import CabinNew from "../views/CabinNew.vue";
 
 Vue.use(VueRouter);
 
@@ -21,6 +24,21 @@ const routes = [
     path: "/signup",
     name: "Signup",
     component: Signup
+  },
+  {
+    path: "/cabin/",
+    name: "Cabins",
+    component: Cabins
+  },
+  {
+    path: "/cabin/new",
+    name: "CabinNew",
+    component: CabinNew
+  },
+  {
+    path: "/cabin/:id",
+    name: "CabinView",
+    component: CabinView
   },
   {
     path: "/about",
