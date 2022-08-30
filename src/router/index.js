@@ -1,11 +1,12 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Login from "../views/Login.vue";
+import Signin from "../views/Signin.vue";
 import Signup from "../views/Signup.vue";
 import Cabins from "../views/Cabins.vue";
-import CabinView from "../views/Cabin.vue";
-import CabinNew from "../views/CabinNew.vue";
+import CabinCreate from "../views/CabinCreate.vue";
+import CabinDetail from "../views/CabinDetail.vue";
+import Reservation from "../views/Reservation.vue";
 
 Vue.use(VueRouter);
 
@@ -18,7 +19,7 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: Login
+    component: Signin
   },
   {
     path: "/signup",
@@ -32,13 +33,18 @@ const routes = [
   },
   {
     path: "/cabin/new",
-    name: "CabinNew",
-    component: CabinNew
+    name: "CabinCreate",
+    component: CabinCreate
   },
   {
     path: "/cabin/:id",
-    name: "CabinView",
-    component: CabinView
+    name: "CabinDetail",
+    component: CabinDetail
+  },
+  {
+    path: "/cabin/:id/reservation",
+    name: "Reservation",
+    component: Reservation
   },
   {
     path: "/about",

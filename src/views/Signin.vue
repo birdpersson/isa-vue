@@ -36,7 +36,12 @@
 
                     <button
                       type="button"
-                      class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+                      class="
+                        btn btn-lg btn-primary btn-block btn-login
+                        text-uppercase
+                        font-weight-bold
+                        mb-2
+                      "
                       v-on:click="login(user)"
                     >
                       Sign in
