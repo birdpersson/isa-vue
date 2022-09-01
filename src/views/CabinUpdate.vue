@@ -1,9 +1,10 @@
 <script>
 import axios from "axios";
 export default {
-  name: "CabinCreate",
+  name: "CabinUpdate",
   data() {
     return {
+      id: this.$route.params.id,
       cabin: {
         name: "",
         address: "",
@@ -18,14 +19,25 @@ export default {
         cost: null,
         rules: "",
       },
+      availableFrom: "",
+      availableTo: "",
     };
   },
+  created() {
+    axios.get(`http://localhost:8080/cabin/${this.id}`).then((Response) => {
+      this.cabin = Response.data;
+      this.cabin.availableFrom = Response.data.availableFrom.slice(0, -1);
+      this.cabin.availableTo = Response.data.availableTo.slice(0, -1);
+    });
+  },
   methods: {
-    create: function (cabin) {
-      console.log(cabin);
-
+    test: function () {
+      var d = new Date().toISOString;
+      console.log(d);
+    },
+    update: function (cabin) {
       axios
-        .post("http://localhost:8080/cabin/", {
+        .put(`http://localhost:8080/cabin/${this.id}`, {
           name: cabin.name,
           address: cabin.address,
           description: cabin.description,
@@ -38,17 +50,45 @@ export default {
         })
         .then((Response) => console.log(Response));
     },
+    upload() {
+      if (this.cabin.images != null) {
+        let contentType = {
+          Headers: { "Content-Type": "multipart/form-data" },
+        };
+        axios
+          .post(
+            "http://localhost:8080/cabin/" + this.id,
+            this.cabin.images,
+            contentType
+          )
+          .then((Response) => {
+            console.log(Response);
+          });
+      }
+    },
+    uploadImage(e) {
+      this.cabin.images = e.target.files;
+      let formData = new FormData();
+      for (let i = 0; i < this.cabin.images.length; i++) {
+        formData.append(
+          "image",
+          this.cabin.images[i],
+          this.cabin.images[i].name
+        );
+      }
+      this.cabin.images = formData;
+    },
   },
 };
 </script>
 
 <template>
-  <div id="cabin-new">
+  <div id="cabin-edit">
     <div class="container-fluid">
       <div class="row no-gutter">
         <div class="col-md-8 col-lg-6">
           <div class="container" id="page-title">
-            <h3>Create Cabin</h3>
+            <h3>Update Cabin</h3>
           </div>
           <div class="login d-flex alignlogin d-flex align-items-center py-5">
             <div class="container">
@@ -116,22 +156,20 @@ export default {
                       </div>
 
                       <div class="form-group">
-                        <label for="FromPicker">Available From:</label>
+                        <label>Available From:</label>
                         <input
                           type="datetime-local"
                           v-model="cabin.availableFrom"
                           class="form-control"
-                          id="FromPicker"
                         />
                       </div>
 
                       <div class="form-group">
-                        <label for="ToPicker">Available To:</label>
+                        <label>Available To:</label>
                         <input
                           type="datetime-local"
                           v-model="cabin.availableTo"
                           class="form-control"
-                          id="ToPicker"
                         />
                       </div>
 
@@ -142,6 +180,17 @@ export default {
                           class="form-control"
                           id="RulesArea"
                         ></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="InputFile">Images:</label>
+                        <input
+                          type="file"
+                          @change="uploadImage"
+                          class="form-control-file"
+                          multiple
+                          id="InputFile"
+                        />
                       </div>
 
                       <button
@@ -162,9 +211,5 @@ export default {
     </div>
   </div>
 </template>
-
 <style>
-#main {
-  text-align: left;
-}
 </style>

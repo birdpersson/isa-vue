@@ -5,6 +5,7 @@ import Signin from "../views/Signin.vue";
 import Signup from "../views/Signup.vue";
 import Cabins from "../views/Cabins.vue";
 import CabinCreate from "../views/CabinCreate.vue";
+import CabinUpdate from "../views/CabinUpdate.vue";
 import CabinDetail from "../views/CabinDetail.vue";
 import Reservation from "../views/Reservation.vue";
 
@@ -40,6 +41,11 @@ const routes = [
     path: "/cabin/:id",
     name: "CabinDetail",
     component: CabinDetail
+  },
+  {
+    path: "/cabin/:id/edit",
+    name: "CabinUpdate",
+    component: CabinUpdate
   },
   {
     path: "/cabin/:id/reservation",
