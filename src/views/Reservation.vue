@@ -1,64 +1,3 @@
-<template>
-  <div id="cabin-reservation">
-    <h1>Create Reservation</h1>
-    <div class="card-body">
-      <div class="card-header">
-        <h4>Details</h4>
-      </div>
-
-      <h3 class="card-title">
-        Cabin:
-        {{ cabin.name }}
-      </h3>
-      <h3 class="card-title">
-        Address:
-        {{ cabin.address }}
-      </h3>
-      <h3 class="card-title">
-        About:
-        {{ cabin.description }}
-      </h3>
-
-      <h3 class="card-title">
-        Rooms:
-        {{ cabin.rooms }}
-      </h3>
-      <h3 class="card-title">
-        Beds Per Room:
-        {{ cabin.beds }}
-      </h3>
-
-      <h3 class="card-title">
-        House Rules:
-        {{ cabin.rules }}
-      </h3>
-      <h3 class="card-title">
-        Price List:
-        {{ cabin.priceList }}
-      </h3>
-
-      <form>
-        <div class="form-group">
-          <label>Select Checkin Date</label>
-          <input type="datetime-local" v-model="reservation.start" />
-        </div>
-        <div class="form-group">
-          <label>Select Stay Duration</label>
-          <input type="number" v-model="reservation.days" />
-        </div>
-        <div class="form-group">
-          <label>People</label>
-          <input type="number" v-model="reservation.people" />
-        </div>
-
-        <button @click="create(reservation)" class="btn btn-primary">
-          Submit
-        </button>
-      </form>
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 export default {
@@ -70,31 +9,47 @@ export default {
         name: "",
         address: "",
         description: "",
-
-        rooms: "",
-        beds: "",
-
+        amenities: [],
+        people: null,
+        price: null,
+        cost: null,
         rules: "",
-        priceList: "",
       },
       reservation: {
-        people: "",
-        price: "",
-        start: "",
-        days: "",
+        amenities: [],
+        people: null,
+        price: null,
+        start: null,
+        days: null,
       },
+      amenities: [],
     };
   },
   methods: {
-    create(reservation) {
-      console.log(reservation);
+    adjustPrice() {
+      this.reservation.price =
+        this.reservation.days *
+        (this.cabin.price + (this.reservation.people - 1) * this.cabin.cost);
+    },
+    adjustAmenities() {
+      this.amenities.forEach((amenity) => {
+        this.reservation.price = this.reservation.price + amenity.price;
+        this.reservation.amenities.push(amenity.name);
+      });
+    },
+    create() {
+      this.adjustPrice();
+      this.adjustAmenities();
+      console.log(this.reservation);
 
       axios
         .post(`http://localhost:8080/cabin/${this.id}/reservation`, {
-          people: reservation.people,
-          price: reservation.price,
-          start: Date.parse(reservation.start) / 1000,
-          days: reservation.days,
+          start: Date.parse(this.reservation.start) / 1000,
+          duration: this.reservation.days,
+          people: this.reservation.people,
+          price: this.reservation.price,
+
+          amenities: this.reservation.amenities,
         })
         .then((Response) => console.log(Response));
     },
@@ -106,6 +61,61 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div id="cabin-reservation">
+    <div class="card-body" id="main">
+      <div class="card-header">
+        <h3>Details</h3>
+      </div>
+      <h5>Cabin: {{ cabin.name }}</h5>
+      <h5>Address: {{ cabin.address }}</h5>
+      <h5>Max Occupants: {{ cabin.people }} people</h5>
+      <h5>Base Price &#40;for one person&#41;: ${{ cabin.price }}</h5>
+      <h5>
+        Added cost &#40;per each additional person&#41;: ${{ cabin.cost }}
+      </h5>
+
+      <div class="card-header">
+        <h3>Create Reservation</h3>
+      </div>
+      <h4>Select Start:</h4>
+      <b-form inline @submit="create">
+        <b-form-input
+          type="datetime-local"
+          v-model="reservation.start"
+          class="mb-2 mr-sm-2 mb-sm-0"
+        ></b-form-input>
+        <b-input-group prepend="+" append="days" class="mb-2 mr-sm-2 mb-sm-0"
+          ><b-form-input
+            type="number"
+            @change="adjustPrice"
+            v-model="reservation.days"
+            placeholder="Stay Duration"
+          ></b-form-input>
+        </b-input-group>
+        <b-input-group prepend="#" class="mb-2 mr-sm-2 mb-sm-0"
+          ><b-form-input
+            type="number"
+            @change="adjustPrice"
+            v-model="reservation.people"
+            placeholder="People"
+          ></b-form-input>
+        </b-input-group>
+        <b-button type="submit" variant="primary">Reserve</b-button>
+      </b-form>
+      <br />
+      <h4>Aditional options:</h4>
+      <ul v-for="amenity in cabin.amenities" :key="amenity.id">
+        <li>
+          <input :value="amenity" type="checkbox" v-model="amenities" />
+          {{ amenity.name }} +{{ amenity.price }}$
+        </li>
+      </ul>
+    </div>
+    <h4>Price &#40;without aditions&#41;: ={{ reservation.price }}$</h4>
+  </div>
+</template>
 
 <style>
 </style>

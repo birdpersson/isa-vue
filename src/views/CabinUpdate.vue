@@ -5,22 +5,23 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
+      amenity: {
+        name: "",
+        price: null,
+      },
       cabin: {
         name: "",
         address: "",
         description: "",
-
         availableFrom: "",
         availableTo: "",
-
+        amenities: [],
         images: [],
         people: null,
         price: null,
         cost: null,
         rules: "",
       },
-      availableFrom: "",
-      availableTo: "",
     };
   },
   created() {
@@ -31,11 +32,12 @@ export default {
     });
   },
   methods: {
-    test: function () {
-      var d = new Date().toISOString;
-      console.log(d);
+    addAmenity() {
+      axios
+        .post(`http://localhost:8080/cabin/${this.id}/amenity`, this.amenity)
+        .then((Response) => (this.cabin.amenities = Response.data.amenities));
     },
-    update: function (cabin) {
+    update(cabin) {
       axios
         .put(`http://localhost:8080/cabin/${this.id}`, {
           name: cabin.name,
@@ -88,14 +90,14 @@ export default {
       <div class="row no-gutter">
         <div class="col-md-8 col-lg-6">
           <div class="container" id="page-title">
-            <h3>Update Cabin</h3>
+            <h2>Update Cabin</h2>
           </div>
-          <div class="login d-flex alignlogin d-flex align-items-center py-5">
+          <div class="py-5">
             <div class="container">
               <div class="row">
-                <div class="col-md-9 col-lg-8 mx-auto">
+                <div class="mx-auto">
                   <div class="container" id="main">
-                    <form>
+                    <b-form @submit="update">
                       <div class="form-group">
                         <label>Name:</label>
                         <input
@@ -105,7 +107,6 @@ export default {
                           placeholder="Enter cabin name"
                         />
                       </div>
-
                       <div class="form-group">
                         <label>Address:</label>
                         <input
@@ -115,7 +116,6 @@ export default {
                           placeholder="Enter cabin address"
                         />
                       </div>
-
                       <div class="form-group">
                         <label>Description:</label>
                         <textarea
@@ -124,7 +124,6 @@ export default {
                           placeholder="Describe the cabin (rooms, beds...)"
                         ></textarea>
                       </div>
-
                       <div class="form-group">
                         <label>Occupants:</label>
                         <input
@@ -134,45 +133,6 @@ export default {
                           class="form-control"
                         />
                       </div>
-
-                      <div class="form-group">
-                        <label>Base Price:</label>
-                        <input
-                          type="number"
-                          v-model="cabin.price"
-                          placeholder="Price for one person (per day)"
-                          class="form-control"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label>Additional Cost:</label>
-                        <input
-                          type="number"
-                          v-model="cabin.cost"
-                          placeholder="Price for each additional person (per day)"
-                          class="form-control"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label>Available From:</label>
-                        <input
-                          type="datetime-local"
-                          v-model="cabin.availableFrom"
-                          class="form-control"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label>Available To:</label>
-                        <input
-                          type="datetime-local"
-                          v-model="cabin.availableTo"
-                          class="form-control"
-                        />
-                      </div>
-
                       <div class="form-group">
                         <label for="RulesArea">House Rules:</label>
                         <textarea
@@ -181,7 +141,6 @@ export default {
                           id="RulesArea"
                         ></textarea>
                       </div>
-
                       <div class="form-group">
                         <label for="InputFile">Images:</label>
                         <input
@@ -192,15 +151,81 @@ export default {
                           id="InputFile"
                         />
                       </div>
-
-                      <button
-                        type="button"
-                        @click="create(cabin)"
-                        class="btn btn-primary"
-                      >
-                        Submit
-                      </button>
-                    </form>
+                      <b-button type="submit" variant="primary">
+                        Update
+                      </b-button>
+                    </b-form>
+                    <br />
+                    <h4>Availability:</h4>
+                    <b-form inline>
+                      <b-form-input
+                        type="datetime-local"
+                        v-model="cabin.availableFrom"
+                        class="mb-2 mr-sm-2 mb-sm-0"
+                      ></b-form-input>
+                      <b-form-input
+                        type="datetime-local"
+                        v-model="cabin.availableTo"
+                        class="mb-2 mr-sm-2 mb-sm-0"
+                      ></b-form-input>
+                    </b-form>
+                    <br />
+                    <h4>Pricelist</h4>
+                    <b-form inline>
+                      <b-input-group append="$" class="mb-2 mr-sm-2 mb-sm-0">
+                        <b-form-input
+                          type="number"
+                          v-model="cabin.price"
+                        ></b-form-input>
+                      </b-input-group>
+                      <b-input-group prepend="+" append="$">
+                        <b-form-input
+                          type="number"
+                          v-model="cabin.cost"
+                        ></b-form-input>
+                      </b-input-group>
+                    </b-form>
+                    <br />
+                    <h4>Add Amenity:</h4>
+                    <b-form inline @submit="addAmenity">
+                      <b-form-input
+                        v-model="amenity.name"
+                        class="mb-2 mr-sm-2 mb-sm-0"
+                        placeholder="Name"
+                      ></b-form-input>
+                      <b-input-group
+                        prepend="+"
+                        append="$"
+                        class="mb-2 mr-sm-2 mb-sm-0"
+                        ><b-form-input
+                          type="number"
+                          v-model="amenity.price"
+                          placeholder="Price"
+                        ></b-form-input>
+                      </b-input-group>
+                      <b-button type="submit" variant="primary">
+                        Save
+                      </b-button>
+                    </b-form>
+                    <br />
+                    <h4>Aditional Options:</h4>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Amenity</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="amenity in this.cabin.amenities"
+                          :key="amenity.id"
+                        >
+                          <td>{{ amenity.name }}</td>
+                          <td>+{{ amenity.price }}$</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
