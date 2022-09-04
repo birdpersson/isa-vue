@@ -25,10 +25,10 @@
             <th>Address</th>
 
             <th>Rating</th>
-            <th>Price</th>
+            <th>Guests</th>
 
-            <th>Rooms</th>
-            <th>Beds</th>
+            <th>Price</th>
+            <th>Cost</th>
           </tr>
         </thead>
         <tbody>
@@ -37,10 +37,10 @@
             <td>{{ cabin.address }}</td>
 
             <td>{{ cabin.rating }}</td>
-            <td>{{ cabin.price }}</td>
+            <td>{{ cabin.people }}</td>
 
-            <td>{{ cabin.rooms }}</td>
-            <td>{{ cabin.beds }}</td>
+            <td>{{ cabin.price }}</td>
+            <td>{{ cabin.cost }}</td>
 
             <td>
               <button @click="reserve(cabin.id)">Reserve</button>
