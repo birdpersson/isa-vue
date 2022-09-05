@@ -1,3 +1,52 @@
+<script>
+import axios from "axios";
+export default {
+  name: "Cabins",
+  data() {
+    return {
+      searchQuery: {
+        name: "",
+        address: "",
+        people: "",
+        start: "",
+        days: null,
+      },
+      query: "?",
+      filterQuery: {},
+      cabins: [],
+    };
+  },
+  methods: {
+    search() {
+      console.log(this.searchQuery);
+      axios
+        .post("http://localhost:8080/cabin/search", {
+          start: Date.parse(this.searchQuery.start) / 1000,
+          days: this.searchQuery.days,
+          people: this.searchQuery.people,
+        })
+        .then((Response) => (this.cabins = Response.data));
+    },
+    filter: function (filterQuerry) {
+      console.log(filterQuerry);
+    },
+    reserve: function (id) {
+      this.$router.push("/cabin/" + id + "/reservation");
+    },
+    sortBy(key) {
+      this.sortKey = key;
+      this.sortOrders[key] = this.sortOrders[key] * -1;
+    },
+  },
+  created() {
+    axios.get("http://localhost:8080/cabin/").then((Response) => {
+      console.log(Response.data);
+      this.cabins = Response.data;
+    });
+  },
+};
+</script>
+
 <template>
   <div id="cabins">
     <div class="card-body">
@@ -5,18 +54,28 @@
         <h4>Cabins</h4>
       </div>
 
-      <form class="form-inline" id="search">
-        <label>Start</label>
-        <input type="datetime-local" v-model="searchQuerry.start" />
-        <label>Days</label>
-        <input type="number" v-model="searchQuerry.days" />
-        <label>People</label>
-        <input type="number" v-model="searchQuerry.people" />
-        <label>Address</label>
-        <input type="text" v-model="searchQuerry.address" />
-
-        <button type="button" @click="search(searchQuerry)">Search</button>
-      </form>
+      <b-form inline @submit="search">
+        <b-form-input
+          type="datetime-local"
+          v-model="searchQuery.start"
+          class="mb-2 mr-sm-2 mb-sm-0"
+        ></b-form-input>
+        <b-input-group prepend="+" append="days" class="mb-2 mr-sm-2 mb-sm-0">
+          <b-form-input
+            type="number"
+            v-model="searchQuery.days"
+            placeholder="Stay Duration"
+          ></b-form-input>
+        </b-input-group>
+        <b-input-group prepend="#" class="mb-2 mr-sm-2 mb-sm-0"
+          ><b-form-input
+            type="number"
+            v-model="searchQuery.people"
+            placeholder="People"
+          ></b-form-input>
+        </b-input-group>
+        <b-button type="submit">Search</b-button>
+      </b-form>
 
       <table class="table">
         <thead>
@@ -43,63 +102,17 @@
             <td>{{ cabin.cost }}</td>
 
             <td>
-              <button @click="reserve(cabin.id)">Reserve</button>
+              <b-button @click="reserve(cabin.id)">Reserve</b-button>
             </td>
 
-            <td>{{ new Date(cabin.availabilityStart * 1000) }}</td>
-            <td>{{ new Date(cabin.availabilityEnd * 1000) }}</td>
+            <td>{{ cabin.availableFrom }}</td>
+            <td>{{ cabin.availableTo }}</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </template>
-
-<script>
-import axios from "axios";
-export default {
-  name: "Cabins",
-  data() {
-    return {
-      searchQuerry: {
-        name: "",
-        address: "",
-        people: "",
-        start: "",
-        days: "",
-      },
-      filterQuerry: {},
-      cabins: [],
-    };
-  },
-  methods: {
-    search: function (searchQuerry) {
-      console.log(searchQuerry);
-      axios
-        .post("http://localhost:8080/cabin/search", {
-          name: searchQuerry.name,
-          address: searchQuerry.address,
-          people: searchQuerry.people,
-          start: Date.parse(searchQuerry.start) / 1000,
-          days: searchQuerry.days,
-        })
-        .then((Response) => (this.cabins = Response.data));
-    },
-    filter: function (filterQuerry) {
-      console.log(filterQuerry);
-    },
-    reserve: function (id) {
-      this.$router.push("/cabin/" + id + "/reservation");
-    },
-  },
-  created() {
-    axios.get("http://localhost:8080/cabin/").then((Response) => {
-      console.log(Response.data);
-      this.cabins = Response.data;
-    });
-  },
-};
-</script>
 
 <style>
 </style>
