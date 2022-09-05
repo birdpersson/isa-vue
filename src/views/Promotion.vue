@@ -130,7 +130,7 @@ export default {
         </li>
       </ul>
     </div>
-    <h4>Price &#40;without aditions&#41;: ={{ promotion.price }}$</h4>
+    <h4>Price &#40;including aditions&#41;: ={{ promotion.price }}$</h4>
   </div>
 </template>
 

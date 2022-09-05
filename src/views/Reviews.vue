@@ -39,7 +39,7 @@ export default {
           <th>Rating</th>
           <th>Comment</th>
           <th>Cabin Name</th>
-          <th>Username</th>
+          <th>Posted By</th>
           <th>Accept</th>
           <th>Reject</th>
         </thead>

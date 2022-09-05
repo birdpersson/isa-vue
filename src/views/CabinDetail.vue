@@ -1,61 +1,3 @@
-<template>
-  <div id="cabin-detail">
-
-    <!-- <header class="container">
-      <div id="carousel-images" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators">
-          <li data-target="carousel-images" data-slide-to="0" class="active"></li>
-          <li data-target="carousel-images" data-slide-to="1"></li>
-          <li data-target="carousel-images" data-slide-to="2"></li>
-        </ol>
-        <div class="carousel-inner" role="listbox">
-          <div class="carousel-item active" :style="{'background-image': 'url(' + this.cabin.images[0] + ')'}"></div>
-        </div>
-      </div>
-    </header> -->
-
-    <div>
-      <b-carousel>
-        <!-- <b-carousel-slide :key="img" v-for="img in this.cabin.images"></b-carousel-slide> -->
-        <b-carousel-slide caption="Test" img-src="https://picsum.photos/1024/480/?image=12"></b-carousel-slide>
-        <b-carousel-slide img-src="http://localhost:8080/uploads/6cca220d-3b5b-41f3-ab61-2e6fa82ee996.png"></b-carousel-slide>
-
-      </b-carousel>
-    </div>
-
-    <div class="card-body">
-      <div class="card-header">
-        <h4>Details</h4>
-      </div>
-
-      <h3 class="card-title">Cabin:
-        {{ cabin.name }}
-      </h3>
-      <h3 class="card-title">Address:
-        {{ cabin.address }}
-      </h3>
-      <h3 class="card-title">About:
-        {{ cabin.description }}
-      </h3>
-
-      <h3 class="card-title">Rooms:
-        {{ cabin.rooms }}
-      </h3>
-      <h3 class="card-title">Beds Per Room:
-        {{ cabin.beds }}
-      </h3>
-      
-      <h3 class="card-title">House Rules:
-        {{ cabin.rules }}
-      </h3>
-      <h3 class="card-title">Price List:
-        {{ cabin.priceList }}
-      </h3>
-
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 export default {
@@ -67,17 +9,25 @@ export default {
         name: "",
         address: "",
         description: "",
-
+        promotions: [],
+        reviews: [],
         images: [],
-        rooms: "",
-        beds: "",
-
+        people: null,
+        price: null,
+        cost: null,
         rules: "",
-        priceList: "",
       },
     };
   },
-  methods: {},
+  methods: {
+    reserve(id) {
+      axios
+        .put(`http://localhost:8080/reservation/${id}/claim`)
+        .then((Response) => console.log(Response));
+    },
+    follow() {},
+    unfollow() {},
+  },
   created() {
     axios
       .get(`http://localhost:8080/cabin/${this.$route.params.id}`)
@@ -88,6 +38,65 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div id="cabin-detail">
+    <div class="container" id="main">
+      <div class="card-header">
+        <h3>Details</h3>
+      </div>
+      <h5>Cabin: {{ cabin.name }}</h5>
+      <h5>Address: {{ cabin.address }}</h5>
+      <h5>Max Occupants: {{ cabin.people }} people</h5>
+      <h5>Base Price &#40;for one person&#41;: ${{ cabin.price }}</h5>
+      <h5>
+        Added cost &#40;per each additional person&#41;: ${{ cabin.cost }}
+      </h5>
+
+      <b-button @click="follow">Follow</b-button>
+      <b-button @click="unfollow">Unfollow</b-button>
+
+      <div class="card-header">
+        <h4>Cabin Promotions</h4>
+      </div>
+      <table class="table">
+        <thead>
+          <th>Price</th>
+          <th>People</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Expires</th>
+          <th></th>
+        </thead>
+        <tbody>
+          <tr v-for="promotion in cabin.promotions" :key="promotion.id">
+            <td>${{ promotion.price }}</td>
+            <td>#{{ promotion.people }}</td>
+            <td>{{ new Date(promotion.start * 1000) }}</td>
+            <td>{{ new Date(promotion.end * 1000) }}</td>
+            <td>{{ new Date(promotion.expiry * 1000) }}</td>
+            <td><b-button @click="reserve(promotion.id)">Reserve</b-button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Cabin Reviews</h4>
+        </div>
+
+        <div v-for="review in cabin.reviews" :key="review.id">
+          <div style="margin-bottom: 10px">
+            <p>{{ review.rating }} Stars</p>
+          </div>
+          <p>{{ review.comment }}</p>
+          <small class="text-muted">Posted by {{ review.username }}</small>
+          <hr />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style>
 </style>
