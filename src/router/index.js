@@ -3,12 +3,17 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Signin from "../views/Signin.vue";
 import Signup from "../views/Signup.vue";
-import Cabins from "../views/Cabins.vue";
+// import Report from "../views/Report.vue";
 import Review from "../views/Review.vue";
+import Cabins from "../views/Cabins.vue";
 import CabinCreate from "../views/CabinCreate.vue";
 import CabinUpdate from "../views/CabinUpdate.vue";
 import CabinDetail from "../views/CabinDetail.vue";
 import Reservation from "../views/Reservation.vue";
+import Promotion from "../views/Promotion.vue";
+// import Reports from "../views/Reports.vue";
+import Reviews from "../views/Reviews.vue";
+
 
 Vue.use(VueRouter);
 
@@ -54,9 +59,19 @@ const routes = [
     component: Reservation
   },
   {
+    path: "/cabin/:id/promotion",
+    name: "Promotion",
+    component: Promotion
+  },
+  {
     path: "/cabin/:id/review",
     name: "Review",
     component: Review
+  },
+  {
+    path: "/review/",
+    name: "Reviews",
+    component: Reviews
   },
   {
     path: "/about",
